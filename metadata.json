@@ -1,0 +1,6 @@
+{
+  "name": "Photofolio Pro",
+  "description": "Portofolio interaktif fotografer dengan tampilan Photobook & kartu interaktif yang bisa dikonfigurasi untuk menyasar calon konsumen.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
