@@ -353,18 +353,20 @@ export default function App() {
               {themeMode === 'light' ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
             </button>
 
-            <div className="hidden md:flex items-center gap-3">
-              <span className="text-xs text-neutral-400 font-mono">
-                Kreator: <strong className={themeMode === 'light' ? 'text-black font-semibold' : 'text-white'}>{activePhotographer.name}</strong>
-              </span>
-              <div 
-                className="w-8 h-8 rounded-full bg-cover bg-center border shadow-inner"
-                style={{ 
-                  backgroundImage: `url(${activePhotographer.avatarUrl})`,
-                  borderColor: activePhotographer.themeColor || '#C5A059' 
-                }}
-              />
-            </div>
+            {currentUser && (
+              <div className="hidden md:flex items-center gap-3">
+                <span className="text-xs text-neutral-400 font-mono">
+                  Kreator: <strong className={themeMode === 'light' ? 'text-black font-semibold' : 'text-white'}>{currentUser.name}</strong>
+                </span>
+                <div 
+                  className="w-8 h-8 rounded-full bg-cover bg-center border shadow-inner"
+                  style={{ 
+                    backgroundImage: `url(${currentUser.role === 'admin' ? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400' : (activePhotographer.avatarUrl || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400')})`,
+                    borderColor: activePhotographer.themeColor || '#C5A059' 
+                  }}
+                />
+              </div>
+            )}
           </div>
         </header>
       )}
