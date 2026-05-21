@@ -6,6 +6,7 @@ interface AestheticDatePickerProps {
   selectedDate: string;
   onChange: (date: string) => void;
   themeColor: string;
+  themeMode?: 'dark' | 'light';
 }
 
 const MONTH_NAMES = [
@@ -15,7 +16,7 @@ const MONTH_NAMES = [
 
 const DAY_LABELS = ['Mi', 'Se', 'Sl', 'Ra', 'Ka', 'Ju', 'Sa'];
 
-export default function AestheticDatePicker({ selectedDate, onChange, themeColor }: AestheticDatePickerProps) {
+export default function AestheticDatePicker({ selectedDate, onChange, themeColor, themeMode = 'dark' }: AestheticDatePickerProps) {
   const today = new Date();
   
   // Set default date to today if empty on first load
@@ -160,7 +161,9 @@ export default function AestheticDatePicker({ selectedDate, onChange, themeColor
 
   return (
     <div id="aesthetic-date-picker-root" className="space-y-2 relative">
-      <label className="text-[10px] text-neutral-400 font-mono tracking-wider flex items-center justify-between">
+      <label className={`text-[10px] font-mono tracking-wider flex items-center justify-between transition-colors ${
+        themeMode === 'light' ? 'text-neutral-500 font-medium' : 'text-neutral-400'
+      }`}>
         <span>Tanggal Sesi Foto Direncanakan</span>
         <span className="text-neutral-500 text-[9px] flex items-center gap-1">
           <Sparkles className="w-2.5 h-2.5" style={{ color: themeColor }} /> Tanggal Terpilih & Terintegrasi
@@ -178,9 +181,9 @@ export default function AestheticDatePicker({ selectedDate, onChange, themeColor
               onClick={() => onChange(preset.date)}
               className="py-1 px-2.5 rounded-lg text-[9px] font-mono transition-all flex items-center gap-1 border cursor-pointer shrink-0"
               style={{
-                backgroundColor: isActive ? `${themeColor}20` : '#161616',
-                borderColor: isActive ? themeColor : '#222222',
-                color: isActive ? '#FFFFFF' : '#888888',
+                backgroundColor: isActive ? `${themeColor}20` : (themeMode === 'light' ? '#FAFAFB' : '#161616'),
+                borderColor: isActive ? themeColor : (themeMode === 'light' ? '#E5E5E5' : '#222222'),
+                color: isActive ? (themeMode === 'light' ? '#000000' : '#FFFFFF') : (themeMode === 'light' ? '#666666' : '#888888'),
               }}
             >
               {isActive && <Check className="w-2.5 h-2.5" style={{ color: themeColor }} />}
@@ -198,16 +201,22 @@ export default function AestheticDatePicker({ selectedDate, onChange, themeColor
         <button
           type="button"
           onClick={() => setShowCalendar(!showCalendar)}
-          className="w-full bg-[#181818] hover:bg-[#1E1E1E] border border-[#2B2B2B] hover:border-neutral-500 rounded-xl px-3.5 py-3 text-xs text-white transition-all text-left flex items-center justify-between cursor-pointer"
+          className={`w-full border rounded-xl px-3.5 py-3 text-xs transition-all text-left flex items-center justify-between cursor-pointer ${
+            themeMode === 'light'
+              ? 'bg-[#FAFAFA] hover:bg-neutral-100 border-neutral-300 text-neutral-800'
+              : 'bg-[#181818] hover:bg-[#1E1E1E] border-[#2B2B2B] text-white hover:border-neutral-500'
+          }`}
           style={{ borderColor: showCalendar ? themeColor : undefined }}
         >
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4" style={{ color: themeColor }} />
-            <span className={`${selectedDate ? 'text-white' : 'text-neutral-500'} font-medium`}>
+            <span className={`${selectedDate ? (themeMode === 'light' ? 'text-neutral-900' : 'text-white') : 'text-neutral-500'} font-medium`}>
               {getHumanReadableDate(selectedDate)}
             </span>
           </div>
-          <span className="text-[10px] font-mono uppercase tracking-widest text-[#999] bg-neutral-900 border border-[#2A2A2A] px-2 py-0.5 rounded-md">
+          <span className={`text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-md ${
+            themeMode === 'light' ? 'text-neutral-700 bg-neutral-100 border border-neutral-200' : 'text-[#999] bg-neutral-900 border border-[#2A2A2A]'
+          }`}>
             {showCalendar ? 'TENTUKAN' : 'KALENDAR'}
           </span>
         </button>
@@ -227,26 +236,32 @@ export default function AestheticDatePicker({ selectedDate, onChange, themeColor
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 8, scale: 0.98 }}
                 transition={{ duration: 0.15 }}
-                className="absolute z-50 left-0 right-0 mt-2 bg-[#141414] border border-[#2C2C2C] rounded-2xl p-4 shadow-2xl space-y-3 max-w-sm mx-auto"
+                className={`absolute z-50 left-0 right-0 mt-2 border rounded-2xl p-4 shadow-2xl space-y-3 max-w-sm mx-auto ${
+                  themeMode === 'light' ? 'bg-white border-neutral-300 shadow-xl text-neutral-800' : 'bg-[#141414] border-[#2C2C2C] text-white'
+                }`}
               >
                 {/* Month/Year Controller Header */}
-                <div className="flex items-center justify-between border-b border-neutral-900/60 pb-2.5">
+                <div className={`flex items-center justify-between border-b pb-2.5 ${themeMode === 'light' ? 'border-neutral-200' : 'border-neutral-900/60'}`}>
                   <button
                     type="button"
                     onClick={handlePrevMonth}
-                    className="p-1 px-1.5 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 rounded-lg text-white/70 transition-colors"
+                    className={`p-1 px-1.5 border rounded-lg transition-colors ${
+                      themeMode === 'light' ? 'bg-neutral-105 hover:bg-neutral-200 border-neutral-300 text-neutral-750' : 'bg-neutral-900 hover:bg-neutral-800 border-neutral-800 text-white/70'
+                    }`}
                   >
                     <ChevronLeft className="w-3.5 h-3.5" />
                   </button>
 
-                  <div className="text-xs font-mono font-semibold text-white tracking-widest uppercase">
+                  <div className={`text-xs font-mono font-semibold tracking-widest uppercase ${themeMode === 'light' ? 'text-neutral-800' : 'text-white'}`}>
                     {MONTH_NAMES[viewMonth]} {viewYear}
                   </div>
 
                   <button
                     type="button"
                     onClick={handleNextMonth}
-                    className="p-1 px-1.5 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 rounded-lg text-white/70 transition-colors"
+                    className={`p-1 px-1.5 border rounded-lg transition-colors ${
+                      themeMode === 'light' ? 'bg-neutral-105 hover:bg-neutral-200 border-neutral-300 text-neutral-750' : 'bg-neutral-900 hover:bg-neutral-800 border-neutral-800 text-white/70'
+                    }`}
                   >
                     <ChevronRight className="w-3.5 h-3.5" />
                   </button>
@@ -258,7 +273,7 @@ export default function AestheticDatePicker({ selectedDate, onChange, themeColor
                     <span 
                       key={lbl} 
                       className={`text-[9px] font-mono uppercase tracking-wider ${
-                        idx === 0 ? 'text-red-500' : 'text-neutral-500'
+                        idx === 0 ? 'text-red-500 font-bold' : (themeMode === 'light' ? 'text-neutral-400' : 'text-neutral-500')
                       }`}
                     >
                       {lbl}
@@ -289,8 +304,8 @@ export default function AestheticDatePicker({ selectedDate, onChange, themeColor
                           isSelected 
                             ? 'text-white font-bold scale-105 shadow-md' 
                             : isPassed
-                              ? 'text-neutral-700 pointer-events-none line-through'
-                              : 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white'
+                              ? (themeMode === 'light' ? 'text-neutral-300 line-through pointer-events-none' : 'text-neutral-700 pointer-events-none line-through')
+                              : (themeMode === 'light' ? 'text-neutral-700 hover:bg-neutral-100' : 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white')
                         }`}
                         style={{
                           backgroundColor: isSelected ? themeColor : undefined,
@@ -303,7 +318,7 @@ export default function AestheticDatePicker({ selectedDate, onChange, themeColor
                 </div>
 
                 {/* Bottom interactive guide */}
-                <div className="text-[9px] text-[#C5A059] font-mono text-center pt-2 border-t border-neutral-900 flex items-center justify-center gap-1.5" style={{ color: themeColor }}>
+                <div className="text-[9px] font-mono text-center pt-2 border-t flex items-center justify-center gap-1.5 transition-colors" style={{ color: themeColor, borderColor: themeMode === 'light' ? '#EBECEF' : '#1F1F1F' }}>
                   <Sparkles className="w-3 h-3 text-neutral-500 shrink-0" /> Ketuk untuk mengonfirmasi jadwal otomatis
                 </div>
               </motion.div>

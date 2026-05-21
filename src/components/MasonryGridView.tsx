@@ -6,15 +6,18 @@ import { LayoutGrid, Calendar, Eye, ZoomIn } from 'lucide-react';
 interface MasonryGridViewProps {
   album: Album;
   themeColor: string;
+  themeMode?: 'dark' | 'light';
 }
 
-export default function MasonryGridView({ album, themeColor }: MasonryGridViewProps) {
+export default function MasonryGridView({ album, themeColor, themeMode = 'dark' }: MasonryGridViewProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const photos = album.photos;
 
   if (photos.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-8 bg-[#121212] rounded-xl border border-[#222] min-h-[300px]">
+      <div className={`flex flex-col items-center justify-center p-8 rounded-xl border min-h-[300px] transition-colors ${
+        themeMode === 'light' ? 'bg-white border-neutral-200' : 'bg-[#121212] border-[#222]'
+      }`}>
         <LayoutGrid className="w-8 h-8 text-neutral-600 mb-2" />
         <p className="text-sm font-mono text-[#555] italic">Tidak ada foto di album ini.</p>
       </div>
@@ -22,27 +25,31 @@ export default function MasonryGridView({ album, themeColor }: MasonryGridViewPr
   }
 
   return (
-    <div className="p-1 sm:p-2 bg-[#0A0A0A] rounded-xl border border-[#222]">
+    <div className={`p-1 sm:p-2 rounded-xl border transition-colors duration-300 ${
+      themeMode === 'light' ? 'bg-white border-neutral-200 shadow-sm' : 'bg-[#0A0A0A] border border-[#222]'
+    }`}>
       {/* Header */}
-      <div className="flex items-center justify-between w-full mb-6 px-2">
+      <div className="flex items-center justify-between w-full mb-6 px-2 pt-1">
         <div className="flex items-center gap-2">
           <LayoutGrid className="w-5 h-5" style={{ color: themeColor }} />
-          <span className="text-xs uppercase tracking-widest text-[#888] font-mono">Mode Grid Masonry Modern</span>
+          <span className={`text-xs uppercase tracking-widest font-mono ${themeMode === 'light' ? 'text-neutral-500' : 'text-[#888]'}`}>Mode Grid Masonry Modern</span>
         </div>
-        <div className="text-xs font-mono text-[#666]">
+        <div className={`text-xs font-mono ${themeMode === 'light' ? 'text-neutral-400' : 'text-[#666]'}`}>
           {photos.length} Total Frame Foto
         </div>
       </div>
 
       {/* Masonry Core Grid */}
-      <div className="columns-1 sm:columns-2 md:columns-3 gap-4 space-y-4">
+      <div className="columns-1 sm:columns-2 md:columns-3 gap-4 space-y-4 p-1">
         {photos.map((photo, index) => (
           <motion.div
             key={photo.id}
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.08, duration: 0.4 }}
-            className="break-inside-avoid relative bg-[#141414] border border-[#222] rounded-xl overflow-hidden group cursor-pointer shadow-lg hover:border-[#444] transition-all"
+            className={`break-inside-avoid relative rounded-xl overflow-hidden group cursor-pointer shadow-lg transition-all ${
+              themeMode === 'light' ? 'bg-neutral-50 border border-neutral-200 hover:border-neutral-400' : 'bg-[#141414] border border-[#222] hover:border-[#444]'
+            }`}
             onClick={() => setSelectedPhoto(photo)}
           >
             {/* Image Box */}

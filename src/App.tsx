@@ -6,7 +6,7 @@ import ClientView from './components/ClientView';
 import LoginForm from './components/LoginForm';
 import { 
   Camera, Settings, Eye, Globe, ChevronRight, User, 
-  Sparkles, Smartphone, Check, Play, Share2
+  Sparkles, Smartphone, Check, Play, Share2, Sun, Moon
 } from 'lucide-react';
 
 interface SessionUser {
@@ -21,6 +21,16 @@ export default function App() {
   const [activePhotographerId, setActivePhotographerId] = useState<string>('');
   const [viewMode, setViewMode] = useState<'editor' | 'public'>('editor');
   const [globalNotif, setGlobalNotif] = useState<string>('');
+  const [themeMode, setThemeMode] = useState<'dark' | 'light'>(() => {
+    const saved = localStorage.getItem('photofolio_pro_theme');
+    return (saved === 'dark' || saved === 'light') ? saved : 'dark';
+  });
+
+  const toggleTheme = () => {
+    const nextTheme = themeMode === 'dark' ? 'light' : 'dark';
+    setThemeMode(nextTheme);
+    localStorage.setItem('photofolio_pro_theme', nextTheme);
+  };
 
   // Sesi pengguna aktif (Admin atau Fotografer tertentu)
   const [currentUser, setCurrentUser] = useState<SessionUser | null>(() => {
@@ -263,7 +273,11 @@ export default function App() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-[#0A0A0A] text-[#E0E0E0] font-sans flex flex-col overflow-x-hidden">
+    <div className={`w-full min-h-screen font-sans flex flex-col overflow-x-hidden transition-colors duration-300 ${
+      themeMode === 'light' 
+        ? 'bg-[#F4F4F7] text-neutral-800' 
+        : 'bg-[#0A0A0A] text-[#E0E0E0]'
+    }`}>
       
       {/* GLOBAL BANNER NOTIFICATION */}
       {globalNotif && (
@@ -274,62 +288,86 @@ export default function App() {
       )}
 
       {/* TOP HEADER STATUS & DESK / VIEWER SWITCHER */}
-      <header className="h-16 border-b border-[#2A2A2A] bg-[#121212] flex items-center justify-between px-4 sm:px-8 shrink-0 z-50 sticky top-0">
-        
-        {/* APP BRAND */}
-        <div className="flex items-center gap-3">
-          <div 
-            className="w-8 h-8 rounded-md flex items-center justify-center text-black font-bold text-sm transition-transform shadow-md"
-            style={{ backgroundColor: activePhotographer.themeColor || '#C5A059' }}
-          >
-            P
-          </div>
-          <span className="text-sm sm:text-base font-semibold tracking-tight uppercase">
-            Photofolio <span className="font-light" style={{ color: activePhotographer.themeColor || '#C5A059' }}>PRO</span>
-          </span>
-        </div>
-
-        {/* WORKSPACE & CLIENT MODE DETECTOR */}
-        <div className="bg-[#1A1A1A] p-1 rounded-lg border border-[#2D2D2D] flex items-center">
-          <button
-            onClick={() => setViewMode('editor')}
-            className={`px-3 py-1.5 rounded text-xs font-mono font-medium tracking-tight transition-all flex items-center gap-1.5 cursor-pointer ${
-              viewMode === 'editor' 
-                ? 'bg-neutral-800 text-white shadow-md' 
-                : 'text-neutral-500 hover:text-neutral-300'
-            }`}
-          >
-            <Settings className="w-3.5 h-3.5" />
-            Workspace Admin
-          </button>
+      {viewMode === 'editor' && (
+        <header className={`h-16 border-b flex items-center justify-between px-4 sm:px-8 shrink-0 z-50 sticky top-0 transition-colors duration-300 ${
+          themeMode === 'light'
+            ? 'border-neutral-200 bg-white text-neutral-800 shadow-sm'
+            : 'border-[#2A2A2A] bg-[#121212] text-[#E0E0E0]'
+        }`}>
           
-          <button
-            onClick={() => setViewMode('public')}
-            className={`px-3 py-1.5 rounded text-xs font-mono font-medium tracking-tight transition-all flex items-center gap-1.5 cursor-pointer ${
-              viewMode === 'public' 
-                ? 'bg-neutral-800 text-white shadow-md' 
-                : 'text-neutral-500 hover:text-neutral-300'
-            }`}
-          >
-            <Eye className="w-3.5 h-3.5" />
-            Tampilan Publik
-          </button>
-        </div>
+          {/* APP BRAND */}
+          <div className="flex items-center gap-3">
+            <div 
+              className="w-8 h-8 rounded-md flex items-center justify-center text-black font-bold text-sm transition-transform shadow-md"
+              style={{ backgroundColor: activePhotographer.themeColor || '#C5A059' }}
+            >
+              P
+            </div>
+            <span className="text-sm sm:text-base font-semibold tracking-tight uppercase">
+              Photofolio <span className="font-light" style={{ color: activePhotographer.themeColor || '#C5A059' }}>PRO</span>
+            </span>
+          </div>
 
-        {/* PROFILE BADGE OR SHARE LINK SIMULATOR */}
-        <div className="hidden md:flex items-center gap-3">
-          <span className="text-xs text-neutral-400 font-mono">
-            Kreator: <strong className="text-white">{activePhotographer.name}</strong>
-          </span>
-          <div 
-            className="w-8 h-8 rounded-full bg-cover bg-center border shadow-inner"
-            style={{ 
-              backgroundImage: `url(${activePhotographer.avatarUrl})`,
-              borderColor: activePhotographer.themeColor || '#C5A059' 
-            }}
-          />
-        </div>
-      </header>
+          {/* WORKSPACE & CLIENT MODE DETECTOR */}
+          <div className={`p-1 rounded-lg border flex items-center transition-colors ${
+            themeMode === 'light'
+              ? 'bg-neutral-100 border-neutral-200'
+              : 'bg-[#1A1A1A] border-[#2D2D2D]'
+          }`}>
+            <button
+              onClick={() => setViewMode('editor')}
+              className={`px-3 py-1.5 rounded text-xs font-mono font-medium tracking-tight transition-all flex items-center gap-1.5 cursor-pointer ${
+                viewMode === 'editor' 
+                  ? (themeMode === 'light' ? 'bg-white text-black shadow-sm' : 'bg-neutral-800 text-white shadow-md') 
+                  : 'text-neutral-500 hover:text-neutral-300'
+              }`}
+            >
+              <Settings className="w-3.5 h-3.5" />
+              Workspace Admin
+            </button>
+            
+            <button
+              onClick={() => setViewMode('public')}
+              className={`px-3 py-1.5 rounded text-xs font-mono font-medium tracking-tight transition-all flex items-center gap-1.5 cursor-pointer ${
+                viewMode === 'public' 
+                  ? (themeMode === 'light' ? 'bg-white text-black shadow-sm' : 'bg-neutral-800 text-white shadow-md') 
+                  : 'text-neutral-500 hover:text-neutral-300'
+              }`}
+            >
+              <Eye className="w-3.5 h-3.5" />
+              Tampilan Publik
+            </button>
+          </div>
+
+          {/* PROFILE BADGE OR SHARE LINK SIMULATOR & THEME TOGGLER */}
+          <div className="flex items-center gap-4">
+            <button
+              onClick={toggleTheme}
+              className={`p-2 rounded-lg border transition-all cursor-pointer ${
+                themeMode === 'light'
+                  ? 'bg-neutral-100 hover:bg-neutral-200 border-neutral-300 text-neutral-800'
+                  : 'bg-neutral-900 hover:bg-[#1A1A1A] border-neutral-800 text-neutral-300'
+              }`}
+              title={themeMode === 'light' ? 'Aktivkan Mode Gelap' : 'Aktivkan Mode Terang'}
+            >
+              {themeMode === 'light' ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
+            </button>
+
+            <div className="hidden md:flex items-center gap-3">
+              <span className="text-xs text-neutral-400 font-mono">
+                Kreator: <strong className={themeMode === 'light' ? 'text-black font-semibold' : 'text-white'}>{activePhotographer.name}</strong>
+              </span>
+              <div 
+                className="w-8 h-8 rounded-full bg-cover bg-center border shadow-inner"
+                style={{ 
+                  backgroundImage: `url(${activePhotographer.avatarUrl})`,
+                  borderColor: activePhotographer.themeColor || '#C5A059' 
+                }}
+              />
+            </div>
+          </div>
+        </header>
+      )}
 
       {/* CORE FRAME CONTENT SCREEN */}
       <div className="flex-1 flex overflow-hidden">
@@ -339,6 +377,14 @@ export default function App() {
               photographers={photographers}
               onLogin={handleLogin}
               onRegister={handleRegisterPhotographer}
+              onUpdatePassword={(photographerId, newPassword) => {
+                const target = photographers.find(p => p.id === photographerId);
+                if (target) {
+                  const updatedTarget = { ...target, password: newPassword };
+                  handleUpdatePhotographer(updatedTarget);
+                }
+              }}
+              themeMode={themeMode}
             />
           ) : (
             <AdminPanel 
@@ -351,28 +397,32 @@ export default function App() {
               currentUser={currentUser}
               onLogout={handleLogout}
               onDeletePhotographer={handleDeletePhotographer}
+              themeMode={themeMode}
             />
           )
         ) : (
           <ClientView 
             photographer={activePhotographer}
             onSubmitBooking={handleSubmitBooking}
+            themeMode={themeMode}
+            toggleTheme={toggleTheme}
           />
         )}
       </div>
-
       {/* SYSTEM STATUS FOOTER */}
-      <footer className="h-8 bg-[#121212] border-t border-[#2A2A2A] px-4 sm:px-6 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-4">
-          <span className="text-[10px] text-[#555] flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span> 
-            Session: Multi-Fotografer Portofolio Aktiv ({photographers.length} Profil Terdaftar)
-          </span>
-        </div>
-        <div className="text-[10px] text-[#555] font-mono hidden sm:block">
-          Ubah Layout: Classic Album, Polaroid Cards, Grid • Elegant Dark
-        </div>
-      </footer>
+      {viewMode === 'editor' && (
+        <footer className="h-8 bg-[#121212] border-t border-[#2A2A2A] px-4 sm:px-6 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-4">
+            <span className="text-[10px] text-[#555] flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span> 
+              Session: Multi-Fotografer Portofolio Aktiv ({photographers.length} Profil Terdaftar)
+            </span>
+          </div>
+          <div className="text-[10px] text-[#555] font-mono hidden sm:block">
+            Ubah Layout: Classic Album, Polaroid Cards, Grid • Elegant Dark
+          </div>
+        </footer>
+      )}
     </div>
   );
 }

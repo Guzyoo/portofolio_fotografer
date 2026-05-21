@@ -39,6 +39,7 @@ export interface Photographer {
   email: string;
   themeColor: string; // Hex color code
   layoutStyle: 'Classic Album' | 'Interactive Cards' | 'Masonry Grid';
+  logoUrl?: string; // Optional custom logo image URL
   albums: Album[];
   bookings: Booking[];
 }

@@ -6,9 +6,10 @@ import { ChevronLeft, ChevronRight, Layers, Calendar, ZoomIn } from 'lucide-reac
 interface InteractiveCardsViewProps {
   album: Album;
   themeColor: string;
+  themeMode?: 'dark' | 'light';
 }
 
-export default function InteractiveCardsView({ album, themeColor }: InteractiveCardsViewProps) {
+export default function InteractiveCardsView({ album, themeColor, themeMode = 'dark' }: InteractiveCardsViewProps) {
   const [cards, setCards] = useState<Photo[]>(album.photos);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   
@@ -83,7 +84,9 @@ export default function InteractiveCardsView({ album, themeColor }: InteractiveC
 
   if (total === 0) {
     return (
-      <div id="cards-empty-state" className="flex flex-col items-center justify-center p-8 bg-[#121212] rounded-xl border border-[#222] min-h-[300px]">
+      <div id="cards-empty-state" className={`flex flex-col items-center justify-center p-8 rounded-xl border min-h-[300px] transition-colors ${
+        themeMode === 'light' ? 'bg-white border-neutral-200' : 'bg-[#121212] border-[#222]'
+      }`}>
         <Layers className="w-8 h-8 text-neutral-600 mb-2" />
         <p className="text-sm font-mono text-[#555] italic">Tidak ada foto di album ini.</p>
       </div>
@@ -91,14 +94,16 @@ export default function InteractiveCardsView({ album, themeColor }: InteractiveC
   }
 
   return (
-    <div id="cards-view-root" className="flex flex-col items-center justify-center p-2 sm:p-4 bg-[#0A0A0A] rounded-xl border border-[#222]">
+    <div id="cards-view-root" className={`flex flex-col items-center justify-center p-2 sm:p-4 rounded-xl border transition-colors duration-300 ${
+      themeMode === 'light' ? 'bg-white border-neutral-200 shadow-sm' : 'bg-[#0A0A0A] border border-[#222]'
+    }`}>
       {/* Header */}
-      <div className="flex items-center justify-between w-full max-w-2xl mb-4 px-2">
+      <div className="flex items-center justify-between w-full max-w-2xl mb-4 px-2 pt-1">
         <div className="flex items-center gap-2">
           <Layers className="w-5 h-5" style={{ color: themeColor }} />
-          <span className="text-xs uppercase tracking-widest text-[#888] font-mono">Mode Kartu Cetak Interaktif</span>
+          <span className={`text-xs uppercase tracking-widest font-mono ${themeMode === 'light' ? 'text-neutral-500' : 'text-[#888]'}`}>Mode Kartu Cetak Interaktif</span>
         </div>
-        <div className="text-xs font-mono text-[#666]">
+        <div className={`text-xs font-mono ${themeMode === 'light' ? 'text-neutral-400' : 'text-[#666]'}`}>
           {currentIndex + 1} of {total} Cetakan Foto
         </div>
       </div>
@@ -158,12 +163,16 @@ export default function InteractiveCardsView({ album, themeColor }: InteractiveC
                   stiffness: 240,
                   damping: 24
                 }}
-                className={`absolute w-full max-w-[280px] sm:max-w-[310px] aspect-[3/4] bg-[#161616] rounded-2xl shadow-2xl overflow-hidden p-3.5 border border-[#333] flex flex-col justify-between touch-none ${
+                className={`absolute w-full max-w-[280px] sm:max-w-[310px] aspect-[3/4] rounded-2xl shadow-2xl overflow-hidden p-3.5 border flex flex-col justify-between touch-none transition-colors duration-300 ${
+                  themeMode === 'light' ? 'bg-[#FAFAFA] border-neutral-200 shadow-lg' : 'bg-[#161616] border-[#333]'
+                } ${
                   isFront && !isAnimating ? 'cursor-grab active:cursor-grabbing' : 'pointer-events-none'
                 }`}
               >
                 {/* Photo frame mimicking physical prints */}
-                <div className="relative flex-1 bg-[#1A1A1A] rounded-lg overflow-hidden border border-[#222]">
+                <div className={`relative flex-1 rounded-lg overflow-hidden border transition-colors ${
+                  themeMode === 'light' ? 'bg-neutral-100 border-neutral-200' : 'bg-[#1A1A1A] border-[#222]'
+                }`}>
                   <img 
                     src={photo.url} 
                     alt={photo.caption} 
@@ -184,7 +193,7 @@ export default function InteractiveCardsView({ album, themeColor }: InteractiveC
                 {/* Bottom detail area resembling high-end polaroid info label */}
                 <div className="pt-3.5 px-1 pb-1">
                   <div className="flex justify-between items-center gap-2">
-                    <p className="text-[11px] sm:text-xs text-white/90 line-clamp-1 font-mono font-medium tracking-tight">
+                    <p className={`text-[11px] sm:text-xs line-clamp-1 font-mono font-medium tracking-tight transition-colors ${themeMode === 'light' ? 'text-neutral-900' : 'text-white/90'}`}>
                       {photo.caption || 'Momen Estetik'}
                     </p>
                     <span 
@@ -195,7 +204,7 @@ export default function InteractiveCardsView({ album, themeColor }: InteractiveC
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 mt-1.5 text-[9px] text-[#555] font-mono justify-between">
-                    <div className="flex items-center gap-1 bg-black/30 px-1.5 py-0.5 rounded">
+                    <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded ${themeMode === 'light' ? 'bg-neutral-100 text-neutral-600' : 'bg-black/30 text-neutral-400'}`}>
                       <Calendar className="w-2.5 h-2.5" />
                       {photo.date}
                     </div>
@@ -213,20 +222,26 @@ export default function InteractiveCardsView({ album, themeColor }: InteractiveC
         <button
           onClick={prevCard}
           disabled={animatingId !== null}
-          className="p-2 sm:p-2.5 bg-[#161616] hover:bg-[#252525] disabled:opacity-40 border border-[#2C2C2C] rounded-full text-white/80 transition-all active:scale-95 cursor-pointer"
+          className={`p-2 sm:p-2.5 disabled:opacity-40 border rounded-full transition-all active:scale-95 cursor-pointer ${
+            themeMode === 'light' ? 'bg-white hover:bg-neutral-100 border-neutral-300 text-neutral-700 font-semibold' : 'bg-[#161616] hover:bg-[#252525] border-[#2C2C2C] text-white/80'
+          }`}
           title="Koleksi Sebelumnya"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
 
-        <span className="text-xs text-[#888] font-mono bg-[#111] px-3 py-1 rounded-full border border-[#222]">
+        <span className={`text-xs font-mono px-3 py-1 rounded-full border transition-colors ${
+          themeMode === 'light' ? 'bg-neutral-150 border-neutral-200 text-neutral-600' : 'bg-[#111] border-[#222] text-[#888]'
+        }`}>
           Koleksi Ke {currentIndex + 1} dari {total}
         </span>
 
         <button
           onClick={nextCard}
           disabled={animatingId !== null}
-          className="p-2 sm:p-2.5 bg-[#161616] hover:bg-[#252525] disabled:opacity-40 border border-[#2C2C2C] rounded-full text-white/80 transition-all active:scale-95 cursor-pointer"
+          className={`p-2 sm:p-2.5 disabled:opacity-40 border rounded-full transition-all active:scale-95 cursor-pointer ${
+            themeMode === 'light' ? 'bg-white hover:bg-neutral-100 border-neutral-300 text-neutral-700 font-semibold' : 'bg-[#161616] hover:bg-[#252525] border-[#2C2C2C] text-white/80'
+          }`}
           title="Koleksi Selanjutnya"
         >
           <ChevronRight className="w-5 h-5" />
